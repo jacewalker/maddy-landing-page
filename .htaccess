@@ -1,0 +1,15 @@
+# Enable rewrite engine
+RewriteEngine On
+
+# Proxy all requests to the Node.js app
+# Replace PORT_NUMBER with the actual port assigned by cPanel (check Node.js app details)
+
+# Proxy root request
+RewriteRule ^$ http://127.0.0.1:PORT_NUMBER/ [P,L]
+
+# Don't proxy if the file or directory exists
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Proxy all other requests
+RewriteRule ^(.*)$ http://127.0.0.1:PORT_NUMBER/$1 [P,L]
