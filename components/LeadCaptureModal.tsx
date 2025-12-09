@@ -271,6 +271,7 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
                                             <input
                                                 {...register('clinicName')}
                                                 type="text"
+                                                spellCheck={false}
                                                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-maddy-blue focus:border-transparent transition-all outline-none"
                                                 placeholder="Bayside Physio"
                                             />
