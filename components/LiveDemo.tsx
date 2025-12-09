@@ -24,7 +24,7 @@ export default function LiveDemo() {
 
                     <div className="flex-shrink-0">
                         <a
-                            href="tel:+61400123456"
+                            href="tel:+61390072450"
                             className="group relative flex items-center gap-4 bg-white text-maddy-blue px-8 py-6 rounded-2xl font-bold text-2xl shadow-2xl hover:scale-105 transition-transform duration-300"
                         >
                             <div className="w-12 h-12 bg-maddy-blue/10 rounded-full flex items-center justify-center group-hover:bg-maddy-blue group-hover:text-white transition-colors">
@@ -34,7 +34,7 @@ export default function LiveDemo() {
                             </div>
                             <div className="flex flex-col text-left">
                                 <span className="text-sm text-gray-500 font-medium uppercase tracking-wider">Call Maddy</span>
-                                <span className="font-display">(02) 9123 4567</span>
+                                <span className="font-display">(03) 9007 2450</span>
                             </div>
 
                             {/* Floating Badge */}
