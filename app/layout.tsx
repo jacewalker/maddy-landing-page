@@ -50,8 +50,9 @@ export default function RootLayout({
               <div>
                 <h4 className="font-bold mb-4">Quick Links</h4>
                 <ul className="space-y-2 text-gray-300">
-                  <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
                   <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
+                  <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
+                  <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
                   <li><a href="#security" className="hover:text-white transition-colors">Security</a></li>
                   <li><a href="#faq" className="hover:text-white transition-colors">FAQ</a></li>
                 </ul>

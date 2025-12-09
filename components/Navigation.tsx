@@ -25,14 +25,17 @@ export default function Navigation() {
             </div>
 
             <div className="hidden md:flex items-center gap-8">
-              <Link href="#how-it-works" className="text-ink-charcoal hover:text-maddy-blue transition-colors">
-                How It Works
-              </Link>
               <Link href="#features" className="text-ink-charcoal hover:text-maddy-blue transition-colors">
                 Features
               </Link>
-              <Link href="#benefits" className="text-ink-charcoal hover:text-maddy-blue transition-colors">
-                For Clinics
+              <Link href="#how-it-works" className="text-ink-charcoal hover:text-maddy-blue transition-colors">
+                How It Works
+              </Link>
+              <Link href="#pricing" className="text-ink-charcoal hover:text-maddy-blue transition-colors">
+                Pricing
+              </Link>
+              <Link href="#security" className="text-ink-charcoal hover:text-maddy-blue transition-colors">
+                Security
               </Link>
               <Link href="#faq" className="text-ink-charcoal hover:text-maddy-blue transition-colors">
                 FAQ
