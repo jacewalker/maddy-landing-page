@@ -1,11 +1,19 @@
 interface FormData {
   name: string
   email: string
+  phone: string
   clinicName: string
   software: string
+  practitionerCount: string
+  topFeatures: string[]
+  biggestChallenge: string
 }
 
 export function getSalesNotificationEmail(data: FormData): string {
+  const featuresHtml = data.topFeatures
+    .map(feature => `<li style="margin-bottom: 4px; color: #374151;">${feature}</li>`)
+    .join('')
+
   return `
 <!DOCTYPE html>
 <html>
@@ -25,15 +33,15 @@ export function getSalesNotificationEmail(data: FormData): string {
               <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700;">New Waitlist Signup! 🎉</h1>
             </td>
           </tr>
-          
+
           <!-- Content -->
           <tr>
             <td style="padding: 40px;">
               <p style="margin: 0 0 24px; color: #374151; font-size: 16px; line-height: 24px;">
                 Someone just joined the Maddy waitlist. Here are the details:
               </p>
-              
-              <!-- Details Table -->
+
+              <!-- Contact Details Table -->
               <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
                 <tr>
                   <td style="padding: 12px; background-color: #F9FAFB; border-bottom: 1px solid #E5E7EB;">
@@ -53,6 +61,14 @@ export function getSalesNotificationEmail(data: FormData): string {
                 </tr>
                 <tr>
                   <td style="padding: 12px; background-color: #F9FAFB; border-bottom: 1px solid #E5E7EB;">
+                    <strong style="color: #1F2937;">Phone:</strong>
+                  </td>
+                  <td style="padding: 12px; background-color: #F9FAFB; border-bottom: 1px solid #E5E7EB; color: #374151;">
+                    <a href="tel:${data.phone}" style="color: #2563EB; text-decoration: none;">${data.phone}</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px; background-color: #FFFFFF; border-bottom: 1px solid #E5E7EB;">
                     <strong style="color: #1F2937;">Clinic Name:</strong>
                   </td>
                   <td style="padding: 12px; background-color: #F9FAFB; border-bottom: 1px solid #E5E7EB; color: #374151;">
@@ -60,21 +76,52 @@ export function getSalesNotificationEmail(data: FormData): string {
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding: 12px; background-color: #FFFFFF;">
+                  <td style="padding: 12px; background-color: #FFFFFF; border-bottom: 1px solid #E5E7EB;">
                     <strong style="color: #1F2937;">Practice Software:</strong>
                   </td>
-                  <td style="padding: 12px; background-color: #FFFFFF; color: #374151;">
+                  <td style="padding: 12px; background-color: #FFFFFF; border-bottom: 1px solid #E5E7EB; color: #374151;">
                     ${data.software}
                   </td>
                 </tr>
+                <tr>
+                  <td style="padding: 12px; background-color: #F9FAFB;">
+                    <strong style="color: #1F2937;">Practitioners:</strong>
+                  </td>
+                  <td style="padding: 12px; background-color: #F9FAFB; color: #374151;">
+                    ${data.practitionerCount}
+                  </td>
+                </tr>
               </table>
-              
+
+              <!-- Preferences Section -->
+              <h2 style="margin: 0 0 16px; color: #1F2937; font-size: 18px; font-weight: 600;">Feature Preferences</h2>
+
+              <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 16px; background-color: #EFF6FF; border-radius: 8px;">
+                    <p style="margin: 0 0 8px; color: #1E40AF; font-size: 14px; font-weight: 600;">Most Important Features:</p>
+                    <ul style="margin: 0; padding-left: 20px;">
+                      ${featuresHtml}
+                    </ul>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 16px; background-color: #FEF3C7; border-radius: 8px;">
+                    <p style="margin: 0 0 8px; color: #92400E; font-size: 14px; font-weight: 600;">Biggest Phone Challenge:</p>
+                    <p style="margin: 0; color: #78350F; font-size: 14px;">${data.biggestChallenge}</p>
+                  </td>
+                </tr>
+              </table>
+
               <p style="margin: 0; color: #6B7280; font-size: 14px; line-height: 20px;">
                 Follow up with them soon to schedule a demo and answer any questions!
               </p>
             </td>
           </tr>
-          
+
           <!-- Footer -->
           <tr>
             <td style="padding: 20px 40px; background-color: #F9FAFB; border-radius: 0 0 8px 8px; text-align: center;">
@@ -93,6 +140,7 @@ export function getSalesNotificationEmail(data: FormData): string {
 }
 
 export function getUserConfirmationEmail(name: string): string {
+  const firstName = name.split(' ')[0]
   return `
 <!DOCTYPE html>
 <html>
@@ -113,47 +161,46 @@ export function getUserConfirmationEmail(name: string): string {
               <p style="margin: 0; color: #E0E7FF; font-size: 16px;">Thanks for joining our waitlist</p>
             </td>
           </tr>
-          
+
           <!-- Content -->
           <tr>
             <td style="padding: 40px;">
               <p style="margin: 0 0 16px; color: #374151; font-size: 16px; line-height: 24px;">
-                Hi ${name},
+                Hi ${firstName},
               </p>
-              
+
               <p style="margin: 0 0 16px; color: #374151; font-size: 16px; line-height: 24px;">
                 Thank you for signing up for early access to Maddy - your AI-powered virtual receptionist for Allied Health practices!
               </p>
-              
+
               <p style="margin: 0 0 24px; color: #374151; font-size: 16px; line-height: 24px;">
-                We're excited to help you never miss a call, fill your calendar, and give your team their time back.
+                We're building Maddy for launch in 2026 and your feedback on the features you need most will help shape the product.
               </p>
-              
+
               <!-- What's Next Box -->
               <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #EFF6FF; border-left: 4px solid #2563EB; border-radius: 4px; margin-bottom: 24px;">
                 <tr>
                   <td style="padding: 20px;">
                     <h2 style="margin: 0 0 12px; color: #1E40AF; font-size: 18px; font-weight: 600;">What's Next?</h2>
                     <ul style="margin: 0; padding-left: 20px; color: #374151; font-size: 14px; line-height: 22px;">
-                      <li style="margin-bottom: 8px;">Our team will review your information</li>
-                      <li style="margin-bottom: 8px;">We'll reach out to schedule a personalised demo</li>
-                      <li>You'll get exclusive early access pricing</li>
+                      <li style="margin-bottom: 8px;">We'll keep you updated on our progress</li>
+                      <li>You'll be first to know when we're ready to launch</li>
                     </ul>
                   </td>
                 </tr>
               </table>
-              
+
               <p style="margin: 0 0 24px; color: #374151; font-size: 16px; line-height: 24px;">
                 In the meantime, if you have any questions, feel free to reply to this email.
               </p>
-              
+
               <p style="margin: 0; color: #374151; font-size: 16px; line-height: 24px;">
                 Best regards,<br>
                 <strong>The Maddy Team</strong>
               </p>
             </td>
           </tr>
-          
+
           <!-- Footer -->
           <tr>
             <td style="padding: 20px 40px; background-color: #F9FAFB; border-radius: 0 0 8px 8px; text-align: center;">

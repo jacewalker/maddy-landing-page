@@ -1,4 +1,5 @@
 import Hero from '@/components/Hero'
+import Problem from '@/components/Problem'
 import LiveDemo from '@/components/LiveDemo'
 import Features from '@/components/Features'
 import Benefits from '@/components/ForClinics' // Renamed conceptually to Benefits
@@ -13,6 +14,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <Problem />
       <LiveDemo />
       <Features />
       <Benefits />

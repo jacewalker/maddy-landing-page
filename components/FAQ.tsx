@@ -2,7 +2,7 @@ export default function FAQ() {
   const faqs = [
     {
       question: "Does Maddy integrate with my practice software?",
-      answer: "Yes! Maddy integrates seamlessly with Cliniko, Halaxy, Nookal, and Power Diary. She can read your calendar in real-time and book appointments directly."
+      answer: "Yes! Maddy integrates seamlessly with Cliniko, Halaxy, and Nookal. She can read your calendar in real-time and book appointments directly."
     },
     {
       question: "Is patient data secure?",
@@ -14,7 +14,7 @@ export default function FAQ() {
     },
     {
       question: "Can I customise Maddy's voice and greeting?",
-      answer: "Yes, you can choose from several Australian voices and fully customise the greeting script to match your clinic's tone and branding."
+      answer: "Absolutely! You can customise the name, gender, voice, personality, and greeting script to match your clinic's brand. Choose from a range of Australian voices and tailor the tone to be as warm, professional, or casual as you like."
     }
   ]
 
