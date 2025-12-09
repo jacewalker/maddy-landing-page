@@ -7,6 +7,7 @@ interface FormData {
   practitionerCount: string
   topFeatures: string[]
   biggestChallenge: string
+  interestedPlan?: string
 }
 
 export function getSalesNotificationEmail(data: FormData): string {
@@ -115,6 +116,17 @@ export function getSalesNotificationEmail(data: FormData): string {
                   </td>
                 </tr>
               </table>
+
+              ${data.interestedPlan ? `
+              <table role="presentation" style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 16px; background-color: #E0E7FF; border-radius: 8px;">
+                    <p style="margin: 0 0 8px; color: #3730A3; font-size: 14px; font-weight: 600;">Interested Plan:</p>
+                    <p style="margin: 0; color: #4338CA; font-size: 14px;">${data.interestedPlan}</p>
+                  </td>
+                </tr>
+              </table>
+              ` : ''}
 
               <p style="margin: 0; color: #6B7280; font-size: 14px; line-height: 20px;">
                 Follow up with them soon to schedule a demo and answer any questions!

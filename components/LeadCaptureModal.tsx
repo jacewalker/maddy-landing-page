@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 const formSchema = z.object({
     name: z.string().min(2, 'Name is required'),
@@ -12,7 +13,16 @@ const formSchema = z.object({
     practitionerCount: z.string().min(1, 'Please select practitioner count'),
     topFeatures: z.array(z.string()).min(1, 'Please select at least one feature'),
     biggestChallenge: z.string().min(1, 'Please select your biggest challenge'),
+    interestedPlan: z.string().optional(),
 })
+
+const planOptions = [
+    'Starter ($349/month)',
+    'Pro ($690/month)',
+    'Unlimited Plus ($1,150/month)',
+    'Enterprise (Custom)',
+    'Not sure yet',
+]
 
 type FormData = z.infer<typeof formSchema>
 
@@ -45,6 +55,19 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
     const [step, setStep] = useState(1)
+    const { executeRecaptcha } = useGoogleReCaptcha()
+
+    // Disable body scroll when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden'
+        } else {
+            document.body.style.overflow = ''
+        }
+        return () => {
+            document.body.style.overflow = ''
+        }
+    }, [isOpen])
 
     const {
         register,
@@ -64,16 +87,19 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
     const [isSoftwareDropdownOpen, setIsSoftwareDropdownOpen] = useState(false)
     const [isPractitionerDropdownOpen, setIsPractitionerDropdownOpen] = useState(false)
     const [isChallengeDropdownOpen, setIsChallengeDropdownOpen] = useState(false)
+    const [isPlanDropdownOpen, setIsPlanDropdownOpen] = useState(false)
     const selectedSoftware = watch('software')
     const selectedPractitionerCount = watch('practitionerCount')
     const selectedFeatures = watch('topFeatures') || []
     const selectedChallenge = watch('biggestChallenge')
+    const selectedPlan = watch('interestedPlan')
 
     useEffect(() => {
         register('software')
         register('practitionerCount')
         register('topFeatures')
         register('biggestChallenge')
+        register('interestedPlan')
     }, [register])
 
     const handleNext = async () => {
@@ -100,12 +126,18 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
         setIsSubmitting(true)
 
         try {
+            // Get reCAPTCHA token
+            let recaptchaToken = ''
+            if (executeRecaptcha) {
+                recaptchaToken = await executeRecaptcha('waitlist_submit')
+            }
+
             const response = await fetch('/api/waitlist', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify({ ...data, recaptchaToken }),
             })
 
             const result = await response.json()
@@ -135,7 +167,7 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-            <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto">
+            <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl animate-slide-up max-h-[95vh] min-h-[600px] overflow-visible">
                 {/* Close Button */}
                 <button
                     onClick={handleClose}
@@ -423,6 +455,49 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
                                             {errors.biggestChallenge && (
                                                 <p className="mt-1 text-sm text-red-500">{errors.biggestChallenge.message}</p>
                                             )}
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Which plan interests you? <span className="text-gray-400">(Optional)</span>
+                                            </label>
+                                            <div className="relative">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsPlanDropdownOpen(!isPlanDropdownOpen)}
+                                                    className="w-full px-4 py-3 text-left bg-white rounded-lg border border-gray-300 focus:ring-2 focus:ring-maddy-blue focus:border-transparent transition-all outline-none flex justify-between items-center group hover:border-maddy-blue"
+                                                >
+                                                    <span className={!selectedPlan ? "text-gray-500" : "text-gray-900 text-sm"}>
+                                                        {selectedPlan || "Select a plan..."}
+                                                    </span>
+                                                    <svg className={`w-5 h-5 text-gray-400 group-hover:text-maddy-blue transition-colors transform ${isPlanDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </button>
+
+                                                {isPlanDropdownOpen && (
+                                                    <div className="absolute z-20 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-xl max-h-60 overflow-y-auto animate-fade-in">
+                                                        {planOptions.map((option) => (
+                                                            <button
+                                                                key={option}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setValue('interestedPlan', option)
+                                                                    setIsPlanDropdownOpen(false)
+                                                                }}
+                                                                className="w-full px-4 py-3 text-left hover:bg-gray-50 hover:text-maddy-blue transition-colors first:rounded-t-xl last:rounded-b-xl flex items-center justify-between group text-sm"
+                                                            >
+                                                                {option}
+                                                                {selectedPlan === option && (
+                                                                    <svg className="w-4 h-4 text-maddy-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                                    </svg>
+                                                                )}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
 
                                         <div className="flex gap-3 mt-6">

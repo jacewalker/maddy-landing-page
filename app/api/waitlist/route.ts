@@ -11,7 +11,56 @@ const waitlistSchema = z.object({
   practitionerCount: z.string().min(1, 'Practitioner count is required'),
   topFeatures: z.array(z.string()).min(1, 'At least one feature must be selected'),
   biggestChallenge: z.string().min(1, 'Biggest challenge is required'),
+  interestedPlan: z.string().optional(),
+  recaptchaToken: z.string().optional(),
 })
+
+async function verifyRecaptcha(token: string): Promise<boolean> {
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY
+
+  // Skip verification in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Skipping reCAPTCHA verification in development')
+    return true
+  }
+
+  if (!secretKey) {
+    console.warn('RECAPTCHA_SECRET_KEY not configured, skipping verification')
+    return true
+  }
+
+  if (!token) {
+    console.warn('No reCAPTCHA token provided')
+    return false
+  }
+
+  try {
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `secret=${secretKey}&response=${token}`,
+    })
+
+    const data = await response.json()
+
+    // Log reCAPTCHA response for debugging
+    console.log('reCAPTCHA verification result:', {
+      success: data.success,
+      score: data.score,
+      action: data.action,
+      errorCodes: data['error-codes'],
+    })
+
+    // reCAPTCHA v3 returns a score from 0.0 to 1.0
+    // 0.5 is a reasonable threshold (adjust as needed)
+    return data.success && data.score >= 0.5
+  } catch (error) {
+    console.error('reCAPTCHA verification error:', error)
+    return false
+  }
+}
 
 type WaitlistData = z.infer<typeof waitlistSchema>
 
@@ -34,6 +83,7 @@ async function submitToHubSpot(data: WaitlistData) {
       number_of_practitioners: data.practitionerCount,
       top_features: data.topFeatures.join('; '),
       biggest_phone_challenge: data.biggestChallenge,
+      interested_plan: data.interestedPlan || '',
       lifecyclestage: 'lead',
     },
   }
@@ -171,6 +221,17 @@ export async function POST(request: NextRequest) {
     // Parse and validate request body
     const body = await request.json()
     const validatedData = waitlistSchema.parse(body)
+
+    // Verify reCAPTCHA
+    if (validatedData.recaptchaToken) {
+      const isValidRecaptcha = await verifyRecaptcha(validatedData.recaptchaToken)
+      if (!isValidRecaptcha) {
+        return NextResponse.json(
+          { success: false, error: 'reCAPTCHA verification failed' },
+          { status: 400 }
+        )
+      }
+    }
 
     // Submit to HubSpot (don't block on failure)
     try {

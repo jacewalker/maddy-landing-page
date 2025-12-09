@@ -22,6 +22,7 @@ export const metadata: Metadata = {
 }
 
 import MouseGlow from '@/components/MouseGlow'
+import RecaptchaProvider from '@/components/RecaptchaProvider'
 
 export default function RootLayout({
   children,
@@ -31,11 +32,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="font-sans antialiased bg-surface-white text-text-primary relative">
-        <MouseGlow />
-        <Navigation />
-        <main className="relative z-10">
-          {children}
-        </main>
+        <RecaptchaProvider>
+          <MouseGlow />
+          <Navigation />
+          <main className="relative z-10">
+            {children}
+          </main>
         <footer className="bg-ink-charcoal text-white py-12 mt-24 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -67,6 +69,7 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        </RecaptchaProvider>
       </body>
     </html>
   )
