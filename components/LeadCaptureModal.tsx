@@ -227,7 +227,7 @@ export default function LeadCaptureModal({ isOpen, onClose }: LeadCaptureModalPr
                                                 {...register('name')}
                                                 type="text"
                                                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-maddy-blue focus:border-transparent transition-all outline-none"
-                                                placeholder="Dr. Sarah Smith"
+                                                placeholder="Sarah Smith"
                                             />
                                             {errors.name && (
                                                 <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
