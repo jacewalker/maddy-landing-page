@@ -1,0 +1,25 @@
+services:
+  maddy-website:
+    build:
+      context: .
+      args:
+        - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+        - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        - NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+    image: maddy-website:latest
+    container_name: maddy-website
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+      - SMTP2GO_API_KEY=${SMTP2GO_API_KEY}
+      - HUBSPOT_API_KEY=${HUBSPOT_API_KEY}
+    networks:
+      - caddy
+    expose:
+      - "3000"
+
+networks:
+  caddy:
+    external: true
+    name: n8n-docker-caddy_default
